@@ -4,10 +4,9 @@ import com.logicalclocks.flink.FeatureStore;
 import com.logicalclocks.flink.HopsworksConnection;
 import com.logicalclocks.flink.StreamFeatureGroup;
 
-import com.logicalclocks.base.engine.FeatureGroupUtils;
-
 import io.hops.examples.flink.fraud.TransactionCountAggregate;
 import io.hops.examples.flink.fraud.TransactionsDeserializer;
+import io.hops.examples.flink.utils.Utils;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -29,7 +28,7 @@ import java.util.Properties;
 
 public class TransactionFraudExample {
 
-  private FeatureGroupUtils utils = new FeatureGroupUtils();
+  private Utils customUtils = new Utils();
   
   public void run(String featureGroupName, Integer featureGroupVersion, String sourceTopic) throws Exception {
 
@@ -47,7 +46,7 @@ public class TransactionFraudExample {
     // get or create stream feature group
     StreamFeatureGroup featureGroup = fs.getOrCreateStreamFeatureGroup(featureGroupName, featureGroupVersion);
     
-    Properties kafkaProperties = utils.getKafkaProperties(featureGroup, null);
+    Properties kafkaProperties = customUtils.getKafkaProperties();
 
     // define transaction source
     KafkaSource<SourceTransaction> transactionSource = KafkaSource.<SourceTransaction>builder()
@@ -78,7 +77,7 @@ public class TransactionFraudExample {
   }
 
   public static void main(String[] args) throws Exception {
-  
+    // -featureGroupName card_transactions_10m_agg -featureGroupVersion 1 -sourceTopic credit_card_transactions
     Options options = new Options();
   
     options.addOption(Option.builder("featureGroupName")

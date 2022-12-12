@@ -19,6 +19,9 @@ package com.logicalclocks.flink.engine;
 
 import com.logicalclocks.base.Feature;
 import com.logicalclocks.base.FeatureStoreException;
+import com.logicalclocks.base.metadata.HopsworksClient;
+import com.logicalclocks.base.metadata.HopsworksHttpClient;
+import com.logicalclocks.flink.HopsworksConnection;
 import com.logicalclocks.flink.StreamFeatureGroup;
 import com.logicalclocks.base.engine.FeatureGroupUtils;
 
@@ -35,6 +38,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class FlinkEngine {
@@ -85,7 +89,8 @@ public class FlinkEngine {
       .addSink(new FlinkKafkaProducer<byte[]>(streamFeatureGroup.getOnlineTopicName(),
         new OnlineFeatureGroupKafkaSink(streamFeatureGroup.getPrimaryKeys().get(0),
           streamFeatureGroup.getOnlineTopicName()),
-        utils.getKafkaProperties(streamFeatureGroup, writeOptions),
+        //utils.getKafkaProperties(streamFeatureGroup, writeOptions),
+        getKafkaProperties(),
         FlinkKafkaProducer.Semantic.AT_LEAST_ONCE));
   }
   
@@ -95,5 +100,20 @@ public class FlinkEngine {
         Collectors.toList());
     
     return ResolvedSchema.of(sanitizedFeatureNames);
+  }
+  
+  private Properties getKafkaProperties() throws FeatureStoreException, IOException {
+    HopsworksConnection connection = HopsworksConnection.builder().build();
+    HopsworksHttpClient client = HopsworksClient.getInstance().getHopsworksHttpClient();
+    Properties properties = new Properties();
+    properties.put("bootstrap.servers", "broker.kafka.service.consul:9091");
+    properties.put("security.protocol", "SSL");
+    properties.put("ssl.truststore.location", client.getTrustStorePath());
+    properties.put("ssl.truststore.password", client.getCertKey());
+    properties.put("ssl.keystore.location", client.getKeyStorePath());
+    properties.put("ssl.keystore.password", client.getCertKey());
+    properties.put("ssl.key.password", client.getCertKey());
+    properties.put("ssl.endpoint.identification.algorithm", "");
+    return properties;
   }
 }

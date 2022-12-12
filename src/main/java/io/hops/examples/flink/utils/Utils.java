@@ -40,5 +40,4 @@ public class Utils {
     properties.put("ssl.endpoint.identification.algorithm", "");
     return properties;
   }
-  
 }

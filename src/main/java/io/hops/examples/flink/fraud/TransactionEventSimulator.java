@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Random;
 
 public class TransactionEventSimulator implements SourceFunction<SourceTransaction> {
-  private final Random random = new Random();
   private final Random randTid = new Random();
   private final Random randAmount = new Random();
   
