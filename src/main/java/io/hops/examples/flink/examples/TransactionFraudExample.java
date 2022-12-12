@@ -77,7 +77,6 @@ public class TransactionFraudExample {
   }
 
   public static void main(String[] args) throws Exception {
-    // -featureGroupName card_transactions_10m_agg -featureGroupVersion 1 -sourceTopic credit_card_transactions
     Options options = new Options();
   
     options.addOption(Option.builder("featureGroupName")

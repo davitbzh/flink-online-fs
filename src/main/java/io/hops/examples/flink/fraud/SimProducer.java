@@ -47,8 +47,6 @@ public class SimProducer {
   }
   
   public static void main(String[] args) throws Exception {
-    // io.hops.examples.flink.fraud.SimProducer
-    // -topicName credit_card_transactions -batchSize 1
     
     Options options = new Options();
     
