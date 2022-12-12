@@ -1,4 +1,4 @@
-package io.hops.examples.flink.hsfs;
+package io.hops.examples.flink.hsfsApi;
 
 import lombok.SneakyThrows;
 import org.apache.flink.streaming.connectors.kafka.KafkaSerializationSchema;

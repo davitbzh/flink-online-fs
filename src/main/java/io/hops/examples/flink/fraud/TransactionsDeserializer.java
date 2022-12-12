@@ -1,6 +1,6 @@
 package io.hops.examples.flink.fraud;
 
-import io.hops.examples.flink.hsfs.SourceTransaction;
+import io.hops.examples.flink.hsfsApi.SourceTransaction;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.formats.avro.AvroDeserializationSchema;

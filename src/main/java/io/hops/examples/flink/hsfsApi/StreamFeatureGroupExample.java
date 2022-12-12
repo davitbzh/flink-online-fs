@@ -1,12 +1,12 @@
-package io.hops.examples.flink.hsfs;
+package io.hops.examples.flink.hsfsApi;
 
-import com.logicalclocks.hsfs.FeatureStore;
-import com.logicalclocks.hsfs.HopsworksConnection;
-import com.logicalclocks.hsfs.StreamFeatureGroup;
+import com.logicalclocks.flink.FeatureStore;
+import com.logicalclocks.flink.HopsworksConnection;
+import com.logicalclocks.flink.StreamFeatureGroup;
 
-import com.logicalclocks.hsfs.engine.FeatureGroupUtils;
+import com.logicalclocks.base.engine.FeatureGroupUtils;
 
-import com.logicalclocks.hsfs.metadata.KafkaApi;
+import com.logicalclocks.base.metadata.KafkaApi;
 import io.hops.examples.flink.fraud.CountAggregate;
 import io.hops.examples.flink.fraud.TransactionsDeserializer;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -47,17 +47,20 @@ public class StreamFeatureGroupExample {
     FeatureStore fs = HopsworksConnection.builder().build().getFeatureStore();
 
     // get or create stream feature group
-    StreamFeatureGroup featureGroup = fs.getOrCreateStreamFeatureGroup("card_transactions_10m_agg", 1,
-      Collections.singletonList("cc_num"), true, null);
-    if (featureGroup.getId() == null){
-      ResolvedSchema schema = ResolvedSchema.of(
-        Column.physical("cc_num", DataTypes.BIGINT()),
-        Column.physical("num_trans_per_10m", DataTypes.BIGINT()),
-        Column.physical("avg_amt_per_10m", DataTypes.DOUBLE()),
-        Column.physical("stdev_amt_per_10m", DataTypes.DOUBLE()));
-      //        Column.physical("complex_feature", DataTypes.ARRAY(DataTypes.DOUBLE()))
-      featureGroup.insertFlinkStream(schema);
-    }
+    StreamFeatureGroup featureGroup = fs.getOrCreateStreamFeatureGroup(
+      "card_transactions_10m_agg", 1,
+      Collections.singletonList("cc_num"),
+      true, null);
+  
+    /* TODO (davit):
+    ResolvedSchema schema = ResolvedSchema.of(
+      Column.physical("cc_num", DataTypes.BIGINT()),
+      Column.physical("num_trans_per_10m", DataTypes.BIGINT()),
+      Column.physical("avg_amt_per_10m", DataTypes.DOUBLE()),
+      Column.physical("stdev_amt_per_10m", DataTypes.DOUBLE()));
+      //Column.physical("complex_feature", DataTypes.ARRAY(DataTypes.DOUBLE()))
+    featureGroup.insertStream(schema);
+    */
     
     Properties kafkaProperties = utils.getKafkaProperties(featureGroup, null);
 
@@ -85,7 +88,7 @@ public class StreamFeatureGroupExample {
       .aggregate(new CountAggregate());
     
     // insert stream
-    featureGroup.insertFlinkStream(aggregationStream);
+    featureGroup.insertStream(aggregationStream);
     
     env.execute("Window aggregation of " + windowType);
   }

@@ -1,6 +1,6 @@
 {
   "type": "record",
-  "namespace": "io.hops.examples.flink.hsfs",
+  "namespace": "io.hops.examples.flink.hsfsApi",
   "name": "StoreEvent",
   "version": "1",
   "fields": [

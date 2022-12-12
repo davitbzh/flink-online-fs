@@ -25,6 +25,7 @@
     <name>hops-examples-flink</name>
 
     <properties>
+        <lombok.version>1.18.10</lombok.version>
         <flink.version>1.14.3</flink.version>
         <kafka.version>2.2.0</kafka.version>
         <jodatime.version>2.10.2</jodatime.version>
@@ -32,9 +33,66 @@
         <avro.version>1.10.1</avro.version>
         <slf4j.version>1.7.30</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
+        <guava.version>14.0.1</guava.version>
+        <awssdk.version>2.10.40</awssdk.version>
+        <json.version>20190722</json.version>
+        <httpclient.version>4.5.6</httpclient.version>
+        <httpcore.version>4.4.13</httpcore.version>
+        <handy.version>2.1.8</handy.version>
+        <dbutils.version>0.0.5</dbutils.version>
+        <scala-short.version>2.12</scala-short.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ssm</artifactId>
+            <version>${awssdk.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sts</artifactId>
+            <version>${awssdk.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>secretsmanager</artifactId>
+            <version>${awssdk.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -125,11 +183,13 @@
             <version>${avro.version}</version>
         </dependency>
 
+        <!--
         <dependency>
             <groupId>com.logicalclocks</groupId>
             <artifactId>hsfs</artifactId>
             <version>${project.version}</version>
         </dependency>
+        -->
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -145,6 +205,38 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${httpcore.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.damnhandy</groupId>
+            <artifactId>handy-uri-templates</artifactId>
+            <version>${handy.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${json.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.databricks</groupId>
+            <artifactId>dbutils-api_${scala-short.version}</artifactId>
+            <version>${dbutils.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -155,7 +247,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>io.hops.examples.flink.hsfs.StreamFeatureGroupExample</mainClass>
+                            <mainClass>io.hops.examples.flink.hsfsApi.StreamFeatureGroupExample</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -1,7 +1,7 @@
 {
   "type" : "record",
   "name" : "SourceTransaction",
-  "namespace" : "io.hops.examples.flink.hsfs",
+  "namespace" : "io.hops.examples.flink.hsfsApi",
   "fields" : [ {
     "name" : "tid",
     "type" : [ "null", "string" ]

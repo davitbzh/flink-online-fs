@@ -1,9 +1,9 @@
 package io.hops.examples.flink.utils;
 
-import com.logicalclocks.hsfs.FeatureStoreException;
-import com.logicalclocks.hsfs.HopsworksConnection;
-import com.logicalclocks.hsfs.metadata.HopsworksClient;
-import com.logicalclocks.hsfs.metadata.HopsworksHttpClient;
+import com.logicalclocks.base.FeatureStoreException;
+import com.logicalclocks.flink.HopsworksConnection;
+import com.logicalclocks.base.metadata.HopsworksClient;
+import com.logicalclocks.base.metadata.HopsworksHttpClient;
 
 import java.io.IOException;
 import java.util.Properties;
