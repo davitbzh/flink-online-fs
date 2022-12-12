@@ -1,6 +1,6 @@
 package io.hops.examples.flink.fraud;
 
-import io.hops.examples.flink.hsfsApi.SourceTransaction;
+import io.hops.examples.flink.examples.SourceTransaction;
 import org.apache.flink.calcite.shaded.org.apache.commons.codec.digest.DigestUtils;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.api.watermark.Watermark;

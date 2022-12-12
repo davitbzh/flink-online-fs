@@ -1,13 +1,13 @@
 package io.hops.examples.flink.fraud;
 
-import io.hops.examples.flink.hsfsApi.SourceTransaction;
+import io.hops.examples.flink.examples.SourceTransaction;
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.java.tuple.Tuple4;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CountAggregate implements AggregateFunction<SourceTransaction,
+public class TransactionCountAggregate implements AggregateFunction<SourceTransaction,
   Tuple4<Long, Long, Double, Double>, Map<String, Object>> {
 
   @Override
@@ -35,6 +35,6 @@ public class CountAggregate implements AggregateFunction<SourceTransaction,
   public Tuple4<Long, Long, Double, Double> merge(Tuple4<Long, Long, Double, Double> accumulator,
                                                   Tuple4<Long, Long, Double, Double> accumulator1) {
     return new Tuple4<>(accumulator1.f0, accumulator.f1 + accumulator1.f1, accumulator.f2 + accumulator1.f2,
-      accumulator.f3 + accumulator1.f3);
+                        accumulator.f3 + accumulator1.f3);
   }
 }

@@ -1,4 +1,4 @@
-package io.hops.examples.flink.hsfsApi;
+package io.hops.examples.flink.examples;
 
 import com.logicalclocks.flink.FeatureStore;
 import com.logicalclocks.flink.HopsworksConnection;
@@ -6,9 +6,13 @@ import com.logicalclocks.flink.StreamFeatureGroup;
 
 import com.logicalclocks.base.engine.FeatureGroupUtils;
 
-import com.logicalclocks.base.metadata.KafkaApi;
-import io.hops.examples.flink.fraud.CountAggregate;
+import io.hops.examples.flink.fraud.TransactionCountAggregate;
 import io.hops.examples.flink.fraud.TransactionsDeserializer;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
@@ -18,24 +22,18 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.table.api.DataTypes;
-import org.apache.flink.table.catalog.Column;
-import org.apache.flink.table.catalog.ResolvedSchema;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-public class StreamFeatureGroupExample {
+public class TransactionFraudExample {
 
   private FeatureGroupUtils utils = new FeatureGroupUtils();
-  private KafkaApi kafkaApi = new KafkaApi();
   
-  public void run() throws Exception {
+  public void run(String featureGroupName, Integer featureGroupVersion, String sourceTopic) throws Exception {
 
     String windowType = "tumbling";
-    String sourceTopic = "flink_topic";
     Duration maxOutOfOrderness = Duration.ofSeconds(60);
     
     // define flink env
@@ -47,20 +45,7 @@ public class StreamFeatureGroupExample {
     FeatureStore fs = HopsworksConnection.builder().build().getFeatureStore();
 
     // get or create stream feature group
-    StreamFeatureGroup featureGroup = fs.getOrCreateStreamFeatureGroup(
-      "card_transactions_10m_agg", 1,
-      Collections.singletonList("cc_num"),
-      true, null);
-  
-    /* TODO (davit):
-    ResolvedSchema schema = ResolvedSchema.of(
-      Column.physical("cc_num", DataTypes.BIGINT()),
-      Column.physical("num_trans_per_10m", DataTypes.BIGINT()),
-      Column.physical("avg_amt_per_10m", DataTypes.DOUBLE()),
-      Column.physical("stdev_amt_per_10m", DataTypes.DOUBLE()));
-      //Column.physical("complex_feature", DataTypes.ARRAY(DataTypes.DOUBLE()))
-    featureGroup.insertStream(schema);
-    */
+    StreamFeatureGroup featureGroup = fs.getOrCreateStreamFeatureGroup(featureGroupName, featureGroupVersion);
     
     Properties kafkaProperties = utils.getKafkaProperties(featureGroup, null);
 
@@ -70,7 +55,6 @@ public class StreamFeatureGroupExample {
       .setTopics(sourceTopic)
       .setStartingOffsets(OffsetsInitializer.earliest())
       .setDeserializer(KafkaRecordDeserializationSchema.of(new TransactionsDeserializer()))
-      //.setValueOnlyDeserializer(new TransactionsDeserializer())
       .build();
   
     // define watermark strategy
@@ -85,7 +69,7 @@ public class StreamFeatureGroupExample {
       .rebalance()
       .keyBy(r -> r.getCcNum())
       .window(TumblingEventTimeWindows.of(Time.minutes(10)))
-      .aggregate(new CountAggregate());
+      .aggregate(new TransactionCountAggregate());
     
     // insert stream
     featureGroup.insertStream(aggregationStream);
@@ -94,7 +78,35 @@ public class StreamFeatureGroupExample {
   }
 
   public static void main(String[] args) throws Exception {
-    StreamFeatureGroupExample streamFeatureGroupExample = new StreamFeatureGroupExample();
-    streamFeatureGroupExample.run();
+  
+    Options options = new Options();
+  
+    options.addOption(Option.builder("featureGroupName")
+      .argName("featureGroupName")
+      .required(true)
+      .hasArg()
+      .build());
+  
+    options.addOption(Option.builder("featureGroupVersion")
+      .argName("featureGroupVersion")
+      .required(true)
+      .hasArg()
+      .build());
+  
+    options.addOption(Option.builder("sourceTopic")
+      .argName("sourceTopic")
+      .required(true)
+      .hasArg()
+      .build());
+  
+    CommandLineParser parser = new DefaultParser();
+    CommandLine commandLine = parser.parse(options, args);
+  
+    String featureGroupName = commandLine.getOptionValue("featureGroupName");
+    Integer featureGroupVersion = Integer.parseInt(commandLine.getOptionValue("featureGroupVersion"));
+    String sourceTopic = commandLine.getOptionValue("sourceTopic");
+    
+    TransactionFraudExample transactionFraudExample = new TransactionFraudExample();
+    transactionFraudExample.run(featureGroupName, featureGroupVersion, sourceTopic);
   }
 }

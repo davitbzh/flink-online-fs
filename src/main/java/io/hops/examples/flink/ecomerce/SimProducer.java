@@ -2,7 +2,7 @@ package io.hops.examples.flink.ecomerce;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.hops.examples.flink.hsfsApi.SourceTransaction;
+import io.hops.examples.flink.examples.SourceTransaction;
 import io.hops.examples.flink.fraud.TransactionEventKafkaSync;
 import io.hops.examples.flink.fraud.TransactionEventSimulator;
 import io.hops.examples.flink.utils.Utils;

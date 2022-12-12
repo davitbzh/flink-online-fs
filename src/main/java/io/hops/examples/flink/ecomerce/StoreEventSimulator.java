@@ -1,10 +1,10 @@
 package io.hops.examples.flink.ecomerce;
 
-import io.hops.examples.flink.hsfsApi.StoreEvent;
-import io.hops.examples.flink.hsfsApi.contexts;
-import io.hops.examples.flink.hsfsApi.definitions;
-import io.hops.examples.flink.hsfsApi.sessionContext;
-import io.hops.examples.flink.hsfsApi.userContext;
+import io.hops.examples.flink.examples.StoreEvent;
+import io.hops.examples.flink.examples.contexts;
+import io.hops.examples.flink.examples.definitions;
+import io.hops.examples.flink.examples.sessionContext;
+import io.hops.examples.flink.examples.userContext;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.calcite.shaded.org.apache.commons.codec.digest.DigestUtils;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;

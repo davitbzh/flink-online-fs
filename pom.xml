@@ -247,7 +247,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>io.hops.examples.flink.hsfsApi.StreamFeatureGroupExample</mainClass>
+                            <mainClass>io.hops.examples.flink.examples.TransactionFraudExample</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
