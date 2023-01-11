@@ -23,6 +23,5 @@ From Hopsworks jobs UI start
 - consumer job and from Flink jobs UI upload jar file  `target/hops-examples-flink-3.1.0-SNAPSHOT.jar`
 - submit job with class path `io.hops.examples.flink.examples.TransactionFraudExample` with arguments `-featureGroupName card_transactions_10m_agg -featureGroupVersion 1 -sourceTopic credit_card_transactions`
 
-
 #### Step 5:
 From Hopsworks jobs UI start backfill job `card_transactions_10m_agg_1_offline_fg_backfill`
