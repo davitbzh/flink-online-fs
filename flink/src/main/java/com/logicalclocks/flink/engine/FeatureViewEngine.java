@@ -17,21 +17,16 @@
 
 package com.logicalclocks.flink.engine;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import com.logicalclocks.base.EntityEndpointType;
-import com.logicalclocks.base.Feature;
 import com.logicalclocks.base.FeatureStoreException;
 import com.logicalclocks.base.FeatureViewBase;
 import com.logicalclocks.base.TrainingDatasetFeature;
-import com.logicalclocks.base.constructor.Join;
 import com.logicalclocks.base.engine.FeatureViewEngineBase;
 import com.logicalclocks.base.metadata.FeatureViewApi;
 import com.logicalclocks.base.metadata.TagsApi;
 
-import com.logicalclocks.flink.FeatureView;
 import com.logicalclocks.flink.constructor.Query;
+import com.logicalclocks.flink.FeatureView;
 import com.logicalclocks.flink.FeatureStore;
 
 import org.slf4j.Logger;

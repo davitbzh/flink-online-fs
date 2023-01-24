@@ -6,7 +6,6 @@ import com.logicalclocks.hsfs.StatisticsConfig;
 import com.logicalclocks.hsfs.StreamFeatureGroup;
 import com.logicalclocks.hsfs.FeatureStore;
 import com.logicalclocks.hsfs.HopsworksConnection;
-import com.logicalclocks.hsfs.MainClass;
 
 import com.logicalclocks.hsfs.engine.SparkEngine;
 
@@ -25,7 +24,7 @@ import java.util.Arrays;
 
 public class TransactionFraudExample {
   private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFraudExample.class);
-  private static final String TOPIC = "";
+  private static final String TOPIC = "credit_card_transactions";
   
   public static void main(String[] args) throws Exception {
     
@@ -36,36 +35,35 @@ public class TransactionFraudExample {
   
     // get or create stream feature groups
     StreamFeatureGroup featureGroup10m = fs.getOrCreateStreamFeatureGroup("card_transactions_10m_agg",
-      1,
+      6,
       "description",
       Arrays.asList("cc_num"),
       null,  // arrays.asList("country")
       null,
       true,
       new StatisticsConfig(true, true, true, true),
-      "eventTime");
+      null);
   
     StreamFeatureGroup featureGroup1h = fs.getOrCreateStreamFeatureGroup("card_transactions_1h_agg",
-      1,
+      6,
       "description",
       Arrays.asList("cc_num"),
       null,  // arrays.asList("country")
       null,
       true,
       new StatisticsConfig(true, true, true, true),
-      "eventTime");
+      null);
   
     StreamFeatureGroup featureGroup12h = fs.getOrCreateStreamFeatureGroup("card_transactions_12h_agg",
-      1,
+      6,
       "description",
       Arrays.asList("cc_num"),
       null,  // arrays.asList("country")
       null,
       true,
       new StatisticsConfig(true, true, true, true),
-      "eventTime");
-  
-  
+      null);
+    
     Dataset<Row> dfFromKafka = SparkEngine.getInstance().getSparkSession().readStream().format("kafka").
       option("kafka.bootstrap.servers", Hops.getBrokerEndpoints()).
       option("subscribe", TOPIC).
@@ -80,7 +78,7 @@ public class TransactionFraudExample {
       load();
 
     //Dataset<Row> dfDeser = dfFromKafka.select(from_avro(col("value"), Hops.getSchema(TOPIC)).as("logs"));
-    Dataset<Row> dfDeser = dfFromKafka.selectExpr("CAST(value AS STRING)")
+    Dataset<Row> dfDeser = dfFromKafka
       .select(from_avro(col("value"), Hops.getSchema(TOPIC)).alias("value"))
       .select("value.tid", "value.datetime", "value.cc_num", "value.amount")
       .selectExpr("CAST(tid as string)", "CAST(datetime as string)", "CAST(cc_num as long)", "CAST(amount as double)");
@@ -93,8 +91,8 @@ public class TransactionFraudExample {
       .agg(avg("amount").alias("avg_amt_per_10m"), stddev("amount").alias("stdev_amt_per_10m"),
         count("cc_num").alias("num_trans_per_10m"))
       .select("cc_num", "num_trans_per_10m", "avg_amt_per_10m", "stdev_amt_per_10m");
-  
-    featureGroup10m.insertStream(windowed10mSignalDF);
+    
+    featureGroup10m.insertStream(windowed10mSignalDF, null, "append", true, 1200000L);
     
     Dataset<Row> windowed1hSignalDF = dfDeser
       .selectExpr("CAST(tid as string)", "CAST(datetime as timestamp)", "CAST(cc_num as long)",
@@ -105,7 +103,7 @@ public class TransactionFraudExample {
         count("cc_num").alias("num_trans_per_1h"))
       .select("cc_num", "num_trans_per_1h", "avg_amt_per_1h", "stdev_amt_per_1h");
   
-    featureGroup1h.insertStream(windowed1hSignalDF);
+    featureGroup1h.insertStream(windowed1hSignalDF, null, "append", true, 1200000L);
   
     Dataset<Row> windowed12hSignalDF = dfDeser
       .selectExpr("CAST(tid as string)", "CAST(datetime as timestamp)", "CAST(cc_num as long)",
@@ -113,9 +111,9 @@ public class TransactionFraudExample {
       .withWatermark("datetime", "60 minutes")
       .groupBy(window(col("datetime"), "12 hours"), col("cc_num"))
       .agg(avg("amount").alias("avg_amt_per_12h"), stddev("amount").alias("stdev_amt_per_12h"),
-        count("cc_num").alias("num_trans_per_1h"))
-      .select("cc_num", "num_trans_per_1h", "avg_amt_per_1h", "stdev_amt_per_1h");
+        count("cc_num").alias("num_trans_per_12h"))
+      .select("cc_num", "num_trans_per_12h", "avg_amt_per_12h", "stdev_amt_per_12h");
   
-    featureGroup12h.insertStream(windowed12hSignalDF);
+    featureGroup12h.insertStream(windowed12hSignalDF, null, "append", true, 1200000L);
   }
 }

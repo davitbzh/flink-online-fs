@@ -9,7 +9,13 @@ import java.util.Map;
 
 public class TransactionCountAggregate implements AggregateFunction<SourceTransaction,
   Tuple4<Long, Long, Double, Double>, Map<String, Object>> {
-
+  
+  String windowLength;
+  
+  public TransactionCountAggregate(String windowLength) {
+    this.windowLength = windowLength;
+  };
+  
   @Override
   public Tuple4<Long, Long, Double, Double> createAccumulator() {
     return new Tuple4<>(0L,0L,0.0,0.0);
@@ -25,9 +31,9 @@ public class TransactionCountAggregate implements AggregateFunction<SourceTransa
   public Map<String, Object> getResult(Tuple4<Long, Long, Double, Double> accumulator) {
     return new HashMap<String, Object>() {{
         put("cc_num", accumulator.f0);
-        put("num_trans_per_10m", accumulator.f1);
-        put("avg_amt_per_10m", accumulator.f2/accumulator.f1);
-        put("stdev_amt_per_10m", accumulator.f3);
+        put("num_trans_per_"+ windowLength, accumulator.f1);
+        put("avg_amt_per_"+ windowLength, accumulator.f2/accumulator.f1);
+        put("stdev_amt_per_"+ windowLength, accumulator.f3);
       }};
   }
 

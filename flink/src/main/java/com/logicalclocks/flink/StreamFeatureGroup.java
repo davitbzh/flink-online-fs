@@ -28,7 +28,6 @@ import com.logicalclocks.base.engine.CodeEngine;
 import com.logicalclocks.base.metadata.FeatureGroupBase;
 
 import com.logicalclocks.flink.constructor.Query;
-
 import com.logicalclocks.flink.engine.FeatureGroupEngine;
 
 import lombok.AllArgsConstructor;

@@ -136,7 +136,7 @@ public class TimeTravel {
       SparkEngine.getInstance().getSparkSession().createDataFrame(contractRows, contractSchema);
   
     Dataset<Row> newContractsDf =
-      SparkEngine.getInstance().getSparkSession().createDataFrame(newContractRows, contractSchema);
+      SparkEngine.getInstance().getSparkSession().createDataFrame(newContractRows, churnSchema);
     
     Dataset<Row> churnedContractsDf =
       SparkEngine.getInstance().getSparkSession().createDataFrame(churnedContracts, churnSchema);
@@ -149,11 +149,11 @@ public class TimeTravel {
     marketingFg.insert(marketingDF);
   
     FeatureGroup contractsFg = fs.getOrCreateFeatureGroup("contracts", 1, "Contract information features",
-      Arrays.asList("customer_id"), null, null, true, TimeTravelFormat.HUDI,
+      Arrays.asList("contract_id"), null, null, true, TimeTravelFormat.HUDI,
       null, "ts");
     contractsFg.insert(contractsDf);
   
-    FeatureGroup churnFg = fs.getOrCreateFeatureGroup("Customer/contract information about activity of contract", 1,
+    FeatureGroup churnFg = fs.getOrCreateFeatureGroup("churn", 1,
       "Contract information features", Arrays.asList("customer_id"), null, null,
       true, TimeTravelFormat.HUDI, null, "ts");
     churnFg.insert(newContractsDf);

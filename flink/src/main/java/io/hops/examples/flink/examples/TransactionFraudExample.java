@@ -30,7 +30,9 @@ public class TransactionFraudExample {
 
   private Utils customUtils = new Utils();
   
-  public void run(String featureGroupName, Integer featureGroupVersion, String sourceTopic) throws Exception {
+  public void run(String featureGroupName, Integer featureGroupVersion, String sourceTopic, Integer windowLength,
+    String transactionFraudExample)
+    throws Exception {
 
     String windowType = "tumbling";
     Duration maxOutOfOrderness = Duration.ofSeconds(60);
@@ -67,8 +69,8 @@ public class TransactionFraudExample {
       .rescale()
       .rebalance()
       .keyBy(r -> r.getCcNum())
-      .window(TumblingEventTimeWindows.of(Time.minutes(10)))
-      .aggregate(new TransactionCountAggregate());
+      .window(TumblingEventTimeWindows.of(Time.minutes(windowLength)))
+      .aggregate(new TransactionCountAggregate(transactionFraudExample));
     
     // insert stream
     featureGroup.insertStream(aggregationStream);
@@ -97,14 +99,29 @@ public class TransactionFraudExample {
       .hasArg()
       .build());
   
+    options.addOption(Option.builder("windowLength")
+      .argName("windowLength")
+      .required(true)
+      .hasArg()
+      .build());
+  
+    options.addOption(Option.builder("featureNameWindowLength")
+      .argName("featureNameWindowLength")
+      .required(true)
+      .hasArg()
+      .build());
+  
     CommandLineParser parser = new DefaultParser();
     CommandLine commandLine = parser.parse(options, args);
   
     String featureGroupName = commandLine.getOptionValue("featureGroupName");
     Integer featureGroupVersion = Integer.parseInt(commandLine.getOptionValue("featureGroupVersion"));
     String sourceTopic = commandLine.getOptionValue("sourceTopic");
+    Integer windowLength = Integer.parseInt(commandLine.getOptionValue("windowLength"));
+    String featureNameWindowLength = commandLine.getOptionValue("featureNameWindowLength");
     
     TransactionFraudExample transactionFraudExample = new TransactionFraudExample();
-    transactionFraudExample.run(featureGroupName, featureGroupVersion, sourceTopic);
+    transactionFraudExample.run(featureGroupName, featureGroupVersion, sourceTopic, windowLength,
+      featureNameWindowLength);
   }
 }

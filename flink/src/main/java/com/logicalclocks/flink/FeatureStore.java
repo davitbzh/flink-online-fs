@@ -24,8 +24,8 @@ import com.logicalclocks.base.TrainingDatasetBase;
 import com.logicalclocks.base.metadata.StorageConnectorApi;
 
 import com.logicalclocks.flink.constructor.Query;
-import com.logicalclocks.flink.engine.FeatureViewEngine;
 import com.logicalclocks.flink.engine.FeatureGroupEngine;
+import com.logicalclocks.flink.engine.FeatureViewEngine;
 
 import com.logicalclocks.flink.metadata.MetaDataUtils;
 import lombok.NonNull;
